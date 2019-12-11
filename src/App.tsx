@@ -3,7 +3,8 @@ import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import Home from './pages/home';
 import Login from './pages/login/index';
 import NotFound from './pages/notFound';
-
+import {persistor} from './redux/store/index'
+import {PersistGate} from 'redux-persist/lib/integration/react';
 
 interface Props {
 
@@ -21,6 +22,7 @@ class App extends React.Component<Props,State>{
     render(){
       return(
         <div className="App">
+          <PersistGate persistor={persistor}>
           <Router>
           <Switch>
             <Route component={Login} path={`${process.env.PUBLIC_URL}/login`} />
@@ -29,6 +31,7 @@ class App extends React.Component<Props,State>{
             {/* <PrivateRoute component={Home} path={`${process.env.PUBLIC_URL}/`} /> */}
           </Switch>
         </Router>
+        </PersistGate>
         </div>
       )
     }

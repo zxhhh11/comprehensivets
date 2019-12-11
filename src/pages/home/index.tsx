@@ -1,28 +1,48 @@
 import * as React from 'react';
 import { connect } from 'react-redux'
-import { Layout, Menu, Icon,Breadcrumb,Button } from 'antd';
-import TableList from '../../components/TableList';
-import { getNews } from '../../redux/actions/index';
-import NewItems from '../../components/NewsItem';
-import Counter from '../../components/sagaPractive';
+import { Layout, Menu, Icon,Breadcrumb } from 'antd';
+import { getNews,setLastOpenKeyA } from '../../redux/actions/index';
 import { Route, Switch as RouteSwitch, Redirect, withRouter, Link } from 'react-router-dom';
-import Dashboard from './dashboard';
+import Presentation from './presentation/index'
 import Files from './files';
-import Forms from './forms';
-import Lists from './lists';
 import Charts from './charts';
-
+import TableList from './tableList';
+import {RouterProps} from '../../utils/common'
 
 const { SubMenu } = Menu;
-const { Header, Sider,Footer } = Layout;
+const { Header, Sider ,Footer } = Layout;
+// 根据路由配置的面包屑导航
+const breadcrumbNameMap:any = {
+  '/': 'Home',
+  '/presentation': 'Presentation',
+  '/presentation/dashboard': 'Dashboard',
+  '/presentation/lists': 'Lists',
+  '/presentation/forms': 'Forms',
+  '/tableList': 'List',
+  '/tableList/fixedColumn': 'FixedColumn',
+  '/tableList/headerGroup': 'HeaderGroup',
+  '/tableList/editable': 'Editable',
+  '/files': 'Files',
+  '/charts': 'Charts'
+};
 
-
-interface IProps {
-  handleClick: () => any
+export interface HomeProps extends RouterProps {
+  handleClick: () => any,
+  // setLastOpenKey:(openKey:string[])=>void,
+  // openKeys:string[],
 }
-class Home extends React.Component<IProps> {
+export interface HomeState {
+  openKeys:string[],
+  collapsed:boolean
+}
+
+
+class Home extends React.Component<HomeProps,HomeState> {
+  rootSubmenuKeys:string[] = ['sub1', 'sub2'];
+
   state = {
     collapsed: false,
+    openKeys: ['sub1'],
   };
 
   toggle = () => {
@@ -30,8 +50,44 @@ class Home extends React.Component<IProps> {
       collapsed: !this.state.collapsed,
     });
   };
-
+  componentDidMount(){
+    
+  }
+  onOpenChange = (openKeys:any) => {
+    console.log(openKeys)
+    const latestOpenKey = openKeys.find((key:any) => this.state.openKeys.indexOf(key) === -1);
+    if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+      console.log(openKeys)
+      // this.props.setLastOpenKey(openKeys)
+      this.setState({
+        openKeys: openKeys,
+      });
+    } else {
+      // this.props.setLastOpenKey([latestOpenKey])
+   
+      this.setState({
+        openKeys: latestOpenKey ? [latestOpenKey] : [],
+      });
+    }
+  };
   render() {
+    const {openKeys} = this.state
+    const { location } = this.props
+    console.log(location)
+    const pathSnippets =location?location.pathname.split('/').filter(i => i):[]
+    const extraBreadcrumbItems = pathSnippets.map((_, index) => {
+    const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+    return (
+      <Breadcrumb.Item key={url}>
+        <Link to={url}>{breadcrumbNameMap[url]}</Link>
+      </Breadcrumb.Item>
+    );
+  });
+  const breadcrumbItems = [
+    <Breadcrumb.Item key='home'>
+      <Link to='/'>Home</Link>
+    </Breadcrumb.Item>
+  ].concat(extraBreadcrumbItems);
     return (
       <Layout id="layout-h">
          <Header className="header" >
@@ -59,72 +115,51 @@ class Home extends React.Component<IProps> {
           mode="inline"
           defaultSelectedKeys={['1']}
           defaultOpenKeys={['sub1']}
+          openKeys={openKeys}
           style={{ height: '100%', borderRight: 0 }}
+          onOpenChange={this.onOpenChange}
         >
           <SubMenu
             key="sub1"
             title={
               <span>
-                <Icon type="user" />
-                subnav 1
+              <Icon type="home" />
+              Presentation
               </span>
             }
           >
-            <Menu.Item key="1">option1</Menu.Item>
-            <Menu.Item key="2">option2</Menu.Item>
-            <Menu.Item key="3">option3</Menu.Item>
-            <Menu.Item key="4">option4</Menu.Item>
+            <Menu.Item key="1"><Link to={`${process.env.PUBLIC_URL}/presentation/dashboard`}>Dashboard</Link></Menu.Item>
+            <Menu.Item key="2"><Link to={`${process.env.PUBLIC_URL}/presentation/lists`}>Lists</Link></Menu.Item>
+            <Menu.Item key="3"><Link to={`${process.env.PUBLIC_URL}/presentation/forms`}>Forms</Link></Menu.Item>
+           
           </SubMenu>
           <SubMenu
             key="sub2"
             title={
               <span>
-                <Icon type="laptop" />
-                subnav 2
+                <Icon type="table" />
+               Table List
               </span>
             }
           >
-            <Menu.Item key="5">option5</Menu.Item>
-            <Menu.Item key="6">option6</Menu.Item>
-            <Menu.Item key="7">option7</Menu.Item>
-            <Menu.Item key="8">option8</Menu.Item>
+            <Menu.Item key="5"><Link to={`${process.env.PUBLIC_URL}/tableList/fixedColumn`}>Fixed Column</Link></Menu.Item>
+            <Menu.Item key="6"><Link to={`${process.env.PUBLIC_URL}/tableList/headerGroup`}>Header Group</Link></Menu.Item>
+            <Menu.Item key="7"><Link to={`${process.env.PUBLIC_URL}/tableList/editable`}>Editable</Link></Menu.Item>
           </SubMenu>
-          <SubMenu
-            key="sub3"
-            title={
-              <span>
-                <Icon type="notification" />
-                subnav 3
-              </span>
-            }
-          >
-            <Menu.Item key="9">option9</Menu.Item>
-            <Menu.Item key="10">option10</Menu.Item>
-            <Menu.Item key="11">option11</Menu.Item>
-            <Menu.Item key="12">option12</Menu.Item>
-          </SubMenu>
+          <Menu.Item key="4"><Link to={`${process.env.PUBLIC_URL}/files`}><Icon type="profile" />Files</Link></Menu.Item>
+          <Menu.Item key="9"> <Link to={`${process.env.PUBLIC_URL}/charts`}><Icon type="area-chart" />Charts</Link></Menu.Item>
         </Menu>
       </Sider>
       <Layout style={{ padding: '0 24px' }}>
-        <Breadcrumb style={{ margin: '16px 0' }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>List</Breadcrumb.Item>
-          <Breadcrumb.Item>App</Breadcrumb.Item>
-        </Breadcrumb>
+       
+        <Breadcrumb style={{ margin: '16px 0' }}>{breadcrumbItems}</Breadcrumb>
         <div className="ant-layout-content">
-            {/* <Button type="primary" onClick={this.props.handleClick}>Test Saga</Button>
-            <h3>title 这里是主页面</h3>
-            <TableList></TableList>
-            <NewItems></NewItems>
-            <Counter></Counter> */}
-
           <RouteSwitch>
-            <Route component={Dashboard} path={`${process.env.PUBLIC_URL}/dashboard`} />
-            <Route component={Lists} path={`${process.env.PUBLIC_URL}/lists`} />
-            <Route component={Forms} path={`${process.env.PUBLIC_URL}/forms`} />
+            <Route component={Presentation} path={`${process.env.PUBLIC_URL}/presentation`} />
+            <Route component={TableList} path={`${process.env.PUBLIC_URL}/tableList`} />
             <Route component={Files} path={`${process.env.PUBLIC_URL}/files`} />
             <Route component={Charts} path={`${process.env.PUBLIC_URL}/charts`} />
-            <Redirect exact path={`${process.env.PUBLIC_URL}/`} to={`${process.env.PUBLIC_URL}/dashboard`} />
+            <Redirect exact path={`${process.env.PUBLIC_URL}/`} to={`${process.env.PUBLIC_URL}/presentation`} />
             <Redirect from='*' to='/404' />
           </RouteSwitch>
          </div>
@@ -137,9 +172,16 @@ class Home extends React.Component<IProps> {
     );
   }
 }
+const mapStateToProps =(state: { common: { openKeys: any; }; })=>{
+  return {
+    // openKeys:state.common.openKeys
+  }
+  
+}
 const mapDispatchToProps = {
  
-  handleClick: getNews
+  handleClick: getNews,
+  // setLastOpenKey:(openKeys:string[])=>setLastOpenKeyA(openKeys),
 
 }
-export default connect(null,mapDispatchToProps)(Home)
+export default connect(mapStateToProps,mapDispatchToProps)(Home)

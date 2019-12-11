@@ -15,6 +15,9 @@ export const decrementAction=()=>({
     type:Constants.DECREMENT
 })
 
+export const setLastOpenKeyA= (openKey:string)=>({
+    type:Constants.SET_LAST_OPEN_KEY,openKey
+})
 
 //  需要 saga 监听执行时 的写法
 // export const incrementAction=()=>({

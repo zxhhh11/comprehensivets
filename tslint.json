@@ -7,90 +7,117 @@
     "jsRules": {
     },
     "rules": {
-      "member-access": false,
-      "ordered-imports": false,
-      "quotemark": false,
-      "no-console": false,
-      "jsx-no-lambda": false,
-      "no-unused-expression": [
-        true,
-        "allow-fast-null-checks"
-    ],
-    "no-duplicate-variable": true,
-    "no-unused-variable": [
-        true,
-        "react"
-    ],
-    "curly": false,
-    "class-name": true,
-    "semicolon": [
-        "always"
-    ],
-    "triple-equals": true,
-    "no-unexternalized-strings": [
-        true,
-        {
-            "signatures": [
-                "localize",
-                "nls.localize"
-            ],
-            "keyIndex": 0,
-            "messageIndex": 1
-        }
-    ],
-    "layering": [
-        true,
-        {
-            "common": [],
-            "node": [
-                "common"
-            ],
-            "browser": [
-                "common"
-            ],
-            "electron-main": [
-                "common",
-                "node"
-            ],
-            "electron-browser": [
-                "common",
-                "browser",
-                "node"
+        "max-line-length": {
+          "options": [1800]
+        },
+        "member-ordering": [
+          false,
+          "public-before-private",
+          "static-before-instance",
+          "variables-before-functions"
+        ],
+        "ordered-imports": false,
+        "object-literal-sort-keys": false,
+        "new-parens": true,
+        "interface-name": [false, "never-prefix"],
+        "no-arg": true,
+        "no-bitwise": true,
+        "no-conditional-assignment": true,
+        "no-consecutive-blank-lines": false,
+        "member-access": false,
+        "no-console": [
+          false,
+          "debug",
+          "info",
+          "time",
+          "timeEnd",
+          "trace"
+        ],
+        "no-empty": false,
+        "no-empty-interface": false,
+        "no-eval": true,
+        "max-classes-per-file": [true, 5, "exclude-class-expressions"],
+        "no-namespace": false,
+        "quotemark": false,
+        "jsx-no-lambda": false,
+        "no-unused-expression": [
+            true,
+            "allow-fast-null-checks"
+        ],
+        "no-unused-variable": [
+            true,
+            "react"
+        ],
+        "curly": false,
+        "class-name": true,
+        "semicolon": [
+            "always"
+        ],
+        "triple-equals": true,
+        "no-unexternalized-strings": [
+            true,
+            {
+                "signatures": [
+                    "localize",
+                    "nls.localize"
+                ],
+                "keyIndex": 0,
+                "messageIndex": 1
+            }
+        ],
+        "layering": [
+            true,
+            {
+                "common": [],
+                "node": [
+                    "common"
+                ],
+                "browser": [
+                    "common"
+                ],
+                "electron-main": [
+                    "common",
+                    "node"
+                ],
+                "electron-browser": [
+                    "common",
+                    "browser",
+                    "node"
+                ]
+            }
+        ],
+        "import-patterns": [
+            true,
+            {
+                "target": "**/{node,electron-browser,electron-main,extensions}/**",
+                "restrictions": "**/*"
+            },
+            {
+                "target": "{**/**.test.ts,**/test/**}",
+                "restrictions": "{**/vs/**,assert,sinon}"
+            },
+            {
+                "target": "**/{common,browser,workbench}/**",
+                "restrictions": "**/vs/**"
+            }
+        ],
+        "duplicate-imports": true,
+        "allow-async": [
+            true,
+            [
+                "node",
+                "electron-main",
+                "electron-browser",
+                "extensions"
             ]
-        }
-    ],
-    "import-patterns": [
-        true,
-        {
-            "target": "**/{node,electron-browser,electron-main,extensions}/**",
-            "restrictions": "**/*"
-        },
-        {
-            "target": "{**/**.test.ts,**/test/**}",
-            "restrictions": "{**/vs/**,assert,sinon}"
-        },
-        {
-            "target": "**/{common,browser,workbench}/**",
-            "restrictions": "**/vs/**"
-        }
-    ],
-    "duplicate-imports": true,
-    "allow-async": [
-        true,
-        [
-            "node",
-            "electron-main",
-            "electron-browser",
-            "extensions"
         ]
-    ]
     },
     "rulesDirectory": [
     ],
     "linterOptions": {
-      "exclude": [
-        "config/**/*.js",
-        "node_modules/**/*.ts"
-      ]
+        "exclude": [
+            "config/**/*.js",
+            "node_modules/**/*.ts"
+        ]
     }
-  }
+}
