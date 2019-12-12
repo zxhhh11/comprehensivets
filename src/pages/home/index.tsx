@@ -1,13 +1,17 @@
 import * as React from 'react';
 import { connect } from 'react-redux'
-import { Layout, Menu, Icon,Breadcrumb } from 'antd';
-import { getNews,setLastOpenKeyA } from '../../redux/actions/index';
-import { Route, Switch as RouteSwitch, Redirect, withRouter, Link } from 'react-router-dom';
+import { Layout, Menu, Icon,Breadcrumb,DatePicker,Popover } from 'antd';
+import { getNews,setLastOpenKeyA, setSelectKeyA } from '../../redux/actions/index';
+import { Route, Switch as RouteSwitch, Redirect, Link } from 'react-router-dom';
 import Presentation from './presentation/index'
 import Files from './files';
 import Charts from './charts';
 import TableList from './tableList';
-import {RouterProps} from '../../utils/common'
+import {RouterProps,RoutersBase,CommonReducer} from '../../utils/common'
+import routers from '../../utils/routers';
+import {emit} from '../../utils/emit'
+// import intl from 'react-intl-universal';
+
 
 const { SubMenu } = Menu;
 const { Header, Sider ,Footer } = Layout;
@@ -28,52 +32,81 @@ const breadcrumbNameMap:any = {
 
 export interface HomeProps extends RouterProps {
   handleClick: () => any,
-  // setLastOpenKey:(openKey:string[])=>void,
-  // openKeys:string[],
+  setLastOpenKey:(openKey:string[])=>void,
+  openKeys:string[],
+  setSelectKey:(selectKey:string)=>void,
+  selectKey:string
 }
 export interface HomeState {
-  openKeys:string[],
-  collapsed:boolean
+  collapsed:boolean,
+  lang:string
 }
 
 
 class Home extends React.Component<HomeProps,HomeState> {
-  rootSubmenuKeys:string[] = ['sub1', 'sub2'];
-
+  rootKeys:string[] = ['presentation', 'tableList'];
   state = {
     collapsed: false,
-    openKeys: ['sub1'],
+    lang:'en-US'
   };
+
+  unListen  = this.props.history.listen(route => {
+    const text = route.pathname;
+    if (text === '/login' || text === '/') {
+      return;
+    }
+    if (text === '/dashboard') {
+      return;
+    }
+    const current = text.substr(text.lastIndexOf('/') + 1);
+    if(current==='charts'||current==='files'){
+      this.props.setLastOpenKey([''])
+    }else{
+      
+      const newOpenKey = text.substr(1,text.lastIndexOf('/')-1);
+      this.props.setLastOpenKey([newOpenKey])
+    }
+    this.props.setSelectKey(current)
+  })
 
   toggle = () => {
     this.setState({
       collapsed: !this.state.collapsed,
     });
   };
+  
+  
   componentDidMount(){
-    
+    let lang =localStorage.getItem('lang')
+    let newLang = lang ? lang:navigator.language
+    this.setLocal(newLang)
+  }
+  componentWillUnmount(){
+  this.unListen()
   }
   onOpenChange = (openKeys:any) => {
-    console.log(openKeys)
-    const latestOpenKey = openKeys.find((key:any) => this.state.openKeys.indexOf(key) === -1);
-    if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-      console.log(openKeys)
-      // this.props.setLastOpenKey(openKeys)
-      this.setState({
-        openKeys: openKeys,
-      });
+    let latestOpenKey = openKeys.find((key:any) => this.props.openKeys.indexOf(key) === -1);
+    if (this.rootKeys.indexOf(latestOpenKey) === -1) {
+      this.props.setLastOpenKey(openKeys)
     } else {
-      // this.props.setLastOpenKey([latestOpenKey])
-   
-      this.setState({
-        openKeys: latestOpenKey ? [latestOpenKey] : [],
-      });
+      this.props.setLastOpenKey([latestOpenKey])
     }
   };
+  changeLocale =()=>{
+    let lang =localStorage.getItem('lang')
+    let newLang = lang ==='en-US'?'zh-CN':'en-US'
+    this.setLocal(newLang)
+  };
+  setLocal=(newLang:string)=>{
+    emit.emit('change_language', newLang)
+    localStorage.setItem('lang',newLang)
+    this.setState({
+      lang:newLang
+    })
+  }
   render() {
-    const {openKeys} = this.state
-    const { location } = this.props
-    console.log(location)
+    const {lang} = this.state
+    const { location,openKeys,selectKey } = this.props
     const pathSnippets =location?location.pathname.split('/').filter(i => i):[]
     const extraBreadcrumbItems = pathSnippets.map((_, index) => {
     const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
@@ -88,72 +121,71 @@ class Home extends React.Component<HomeProps,HomeState> {
       <Link to='/'>Home</Link>
     </Breadcrumb.Item>
   ].concat(extraBreadcrumbItems);
+
+  const getMenu =(arr:RoutersBase[]):JSX.Element[]=>{
+  return  arr.map((val:RoutersBase,key:number)=>{
+     return val.children ? <SubMenu
+      key={val.key}
+      title={
+        <span>
+        {val.icon?<Icon type={val.icon}/>:'' }
+        {val.title}
+        </span>
+      }
+    >
+     {getMenu(val.children)}
+    </SubMenu>:
+     <Menu.Item key={val.key}><Link to={val.url}> {val.icon?<Icon type={val.icon}/>:'' } {val.title}</Link></Menu.Item>
+
+    })
+  }
+
+  const content = (
+    <div>
+      <p>Content</p>
+      <p>Content</p>
+    </div>
+  );
     return (
-      <Layout id="layout-h">
-         <Header className="header" >
-         <Icon
-              className="trigger"
-              type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
-              onClick={this.toggle}
-              style={{display:'none'}}
-            />
-      <div className="logo" >AMBER</div>
+     
+  <Layout id="layout-h">
+    <Header className="header" >
+      <Icon
+          className="trigger"
+          type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
+          onClick={this.toggle}
+          style={{display:'none'}}
+        />
+        <div className="logo" >AMBER</div>
       <Menu
         theme="dark"
         mode="horizontal"
-        defaultSelectedKeys={[]}
+        
         style={{ lineHeight: '64px',float:'right' }}
       >
-        <Menu.Item key="1"><Icon  style={{ fontSize: '20px' }} type="question-circle" /></Menu.Item>
+        <Menu.Item key="1"><Popover content={content} title="Title" trigger="click"><Icon  style={{ fontSize: '20px' }} type="question-circle" /></Popover></Menu.Item>
         <Menu.Item key="2"><Icon style={{ fontSize: '20px' }} type="bell" /></Menu.Item>
         <Menu.Item key="3"><Icon style={{ fontSize: '20px' }} type="setting" /></Menu.Item>
+        <Menu.Item className="language" onClick={this.changeLocale}>{lang==='en-US'?'中文':'English'} </Menu.Item>
       </Menu>
     </Header>
     <Layout>
       <Sider width={180} style={{ background: '#fff' }}>
         <Menu
           mode="inline"
-          defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
+        selectedKeys={[selectKey]}
+          defaultOpenKeys={['presentation']}
           openKeys={openKeys}
           style={{ height: '100%', borderRight: 0 }}
           onOpenChange={this.onOpenChange}
         >
-          <SubMenu
-            key="sub1"
-            title={
-              <span>
-              <Icon type="home" />
-              Presentation
-              </span>
-            }
-          >
-            <Menu.Item key="1"><Link to={`${process.env.PUBLIC_URL}/presentation/dashboard`}>Dashboard</Link></Menu.Item>
-            <Menu.Item key="2"><Link to={`${process.env.PUBLIC_URL}/presentation/lists`}>Lists</Link></Menu.Item>
-            <Menu.Item key="3"><Link to={`${process.env.PUBLIC_URL}/presentation/forms`}>Forms</Link></Menu.Item>
-           
-          </SubMenu>
-          <SubMenu
-            key="sub2"
-            title={
-              <span>
-                <Icon type="table" />
-               Table List
-              </span>
-            }
-          >
-            <Menu.Item key="5"><Link to={`${process.env.PUBLIC_URL}/tableList/fixedColumn`}>Fixed Column</Link></Menu.Item>
-            <Menu.Item key="6"><Link to={`${process.env.PUBLIC_URL}/tableList/headerGroup`}>Header Group</Link></Menu.Item>
-            <Menu.Item key="7"><Link to={`${process.env.PUBLIC_URL}/tableList/editable`}>Editable</Link></Menu.Item>
-          </SubMenu>
-          <Menu.Item key="4"><Link to={`${process.env.PUBLIC_URL}/files`}><Icon type="profile" />Files</Link></Menu.Item>
-          <Menu.Item key="9"> <Link to={`${process.env.PUBLIC_URL}/charts`}><Icon type="area-chart" />Charts</Link></Menu.Item>
+          {getMenu(routers)}
         </Menu>
       </Sider>
       <Layout style={{ padding: '0 24px' }}>
-       
         <Breadcrumb style={{ margin: '16px 0' }}>{breadcrumbItems}</Breadcrumb>
         <div className="ant-layout-content">
+        <DatePicker />
           <RouteSwitch>
             <Route component={Presentation} path={`${process.env.PUBLIC_URL}/presentation`} />
             <Route component={TableList} path={`${process.env.PUBLIC_URL}/tableList`} />
@@ -165,23 +197,24 @@ class Home extends React.Component<HomeProps,HomeState> {
          </div>
         <Footer style={{ textAlign: 'center' }}>Practice ©2019 Created by Amber</Footer>
       </Layout>
-     
     </Layout>
-    
-      </Layout>
+  </Layout>
+
     );
   }
 }
-const mapStateToProps =(state: { common: { openKeys: any; }; })=>{
+const mapStateToProps =(state: { common:CommonReducer })=>{
   return {
-    // openKeys:state.common.openKeys
+    openKeys:state.common.openKeys,
+    selectKey:state.common.selectKey
   }
   
 }
 const mapDispatchToProps = {
  
   handleClick: getNews,
-  // setLastOpenKey:(openKeys:string[])=>setLastOpenKeyA(openKeys),
+  setLastOpenKey:(openKeys:string[])=>setLastOpenKeyA(openKeys),
+  setSelectKey:(selectKey:string)=>setSelectKeyA(selectKey)
 
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Home)

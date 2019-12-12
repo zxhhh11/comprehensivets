@@ -13,3 +13,16 @@ export interface RouterProps extends RouteComponentProps  {
   router?: InjectedRouter;
   routes?: PlainRoute[];
 }
+
+export interface RoutersBase {
+  key: string,
+  icon: string|null,
+  title: string,
+  url:string,
+  children: null|RoutersBase[]
+}
+
+export interface CommonReducer{
+  openKeys:string[],
+  selectKey:string
+}

@@ -6,6 +6,7 @@ import Counter from '../../../../components/sagaPractive';
 import {Button} from 'antd';
 import { connect } from 'react-redux';
 import { getNews } from '../../../../redux/actions/index';
+import intl from 'react-intl-universal';
 export interface DashboardProps {
   handleClick: () => any,
 }
@@ -20,9 +21,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     this.state = { dashboard:''  };
   }
   render() { 
-    return ( <div>Dashboard
-      &nbsp;
-    <Button type="primary" onClick={this.props.handleClick}>Test Saga</Button>
+    return ( <div>
+    <Button type="primary" onClick={this.props.handleClick}>{intl.get('test')}&nbsp;</Button>
       <Counter></Counter>
       <TableList></TableList>
       <NewItems></NewItems>
