@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux'
-import { Layout, Menu, Icon,Breadcrumb,DatePicker,Popover } from 'antd';
-import { getNews,setLastOpenKeyA, setSelectKeyA } from '../../redux/actions/index';
+import { Layout, Menu, Icon,Breadcrumb,DatePicker,Popover,Tabs,Button ,Badge,Avatar,Dropdown} from 'antd';
+import { getNews,setLastOpenKeyAn, setSelectKeyAn,logoutClickAn} from '../../redux/actions/index';
+import {logoutApi} from '../../redux/api/user';
 import { Route, Switch as RouteSwitch, Redirect, Link } from 'react-router-dom';
 import Presentation from './presentation/index'
 import Files from './files';
@@ -11,8 +12,10 @@ import {RouterProps,RoutersBase,CommonReducer} from '../../utils/common'
 import routers from '../../utils/routers';
 import {emit} from '../../utils/emit'
 // import intl from 'react-intl-universal';
+import AllSetting from '../../components/allSetting';
 
 
+const { TabPane } = Tabs;
 const { SubMenu } = Menu;
 const { Header, Sider ,Footer } = Layout;
 // 根据路由配置的面包屑导航
@@ -35,11 +38,13 @@ export interface HomeProps extends RouterProps {
   setLastOpenKey:(openKey:string[])=>void,
   openKeys:string[],
   setSelectKey:(selectKey:string)=>void,
-  selectKey:string
+  selectKey:string,
+  logoutClick:()=>void
 }
 export interface HomeState {
   collapsed:boolean,
-  lang:string
+  lang:string,
+  drawerVisible:boolean
 }
 
 
@@ -47,7 +52,8 @@ class Home extends React.Component<HomeProps,HomeState> {
   rootKeys:string[] = ['presentation', 'tableList'];
   state = {
     collapsed: false,
-    lang:'en-US'
+    lang:'en-US',
+    drawerVisible: false
   };
 
   unListen  = this.props.history.listen(route => {
@@ -74,7 +80,17 @@ class Home extends React.Component<HomeProps,HomeState> {
       collapsed: !this.state.collapsed,
     });
   };
-  
+  showDrawer = () => {
+    this.setState({
+      drawerVisible: true,
+    });
+  };
+
+  onClose = () => {
+    this.setState({
+      drawerVisible: false,
+    });
+  };
   
   componentDidMount(){
     let lang =localStorage.getItem('lang')
@@ -105,8 +121,8 @@ class Home extends React.Component<HomeProps,HomeState> {
     })
   }
   render() {
-    const {lang} = this.state
-    const { location,openKeys,selectKey } = this.props
+    const {lang,drawerVisible} = this.state
+    const { location,openKeys,selectKey,logoutClick } = this.props
     const pathSnippets =location?location.pathname.split('/').filter(i => i):[]
     const extraBreadcrumbItems = pathSnippets.map((_, index) => {
     const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
@@ -139,12 +155,44 @@ class Home extends React.Component<HomeProps,HomeState> {
 
     })
   }
-
+  const personMenu = (
+    <Menu>
+      <Menu.Item key="0">
+        <a href="http://www.alipay.com/"> <Icon type="user"></Icon> &nbsp;Person one</a>
+      </Menu.Item>
+      <Menu.Item key="1">
+     <a href="http://www.taobao.com/"> <Icon type="user"></Icon>&nbsp;Person two</a>
+      </Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="3" onClick={logoutClick}><Icon type="logout"></Icon>&nbsp;&nbsp;Log out</Menu.Item>
+    </Menu>
+  );
+  
+  
   const content = (
-    <div>
-      <p>Content</p>
-      <p>Content</p>
-    </div>
+  <div className="notification">
+    <Tabs defaultActiveKey="2">
+      <TabPane tab={<span><Icon type="message" /> Notification(4)</span>} key="1">
+       <div className="notification-list">Notification</div>
+       <div className="notification-list">Notification</div>
+       <div className="notification-list">Notification</div>
+       <div className="notification-list">Notification</div>
+      </TabPane>
+      <TabPane tab={<span><Icon type="notification" />Message(3) </span>}key="2">
+      <div className="message-list">Message</div>
+      <div className="message-list">Message</div>
+      <div className="message-list">Message</div>
+      </TabPane>
+    </Tabs> 
+    <Button.Group size='default'>
+          <Button type="primary">
+           Clear
+          </Button>
+          <Button type="primary">
+          View More
+          </Button>
+        </Button.Group>
+  </div>
   );
     return (
      
@@ -163,10 +211,11 @@ class Home extends React.Component<HomeProps,HomeState> {
         
         style={{ lineHeight: '64px',float:'right' }}
       >
-        <Menu.Item key="1"><Popover content={content} title="Title" trigger="click"><Icon  style={{ fontSize: '20px' }} type="question-circle" /></Popover></Menu.Item>
-        <Menu.Item key="2"><Icon style={{ fontSize: '20px' }} type="bell" /></Menu.Item>
-        <Menu.Item key="3"><Icon style={{ fontSize: '20px' }} type="setting" /></Menu.Item>
-        <Menu.Item className="language" onClick={this.changeLocale}>{lang==='en-US'?'中文':'English'} </Menu.Item>
+        <Menu.Item key="1"><div className="right-menu"><a href="https://ant.design/docs/react/introduce-cn"><Icon  style={{ fontSize: '20px' }} type="question-circle" /></a></div></Menu.Item>
+        <Menu.Item key="2"><Popover  content={content}  trigger="click"><div className="right-menu"> <Badge count={5}><Icon style={{ fontSize: '20px' }} type="bell" /></Badge></div></Popover></Menu.Item>
+        <Menu.Item key="3"><div className="right-menu" onClick={this.showDrawer}><Icon style={{ fontSize: '20px' }} type="setting" /></div></Menu.Item>
+        <Menu.Item  key="4"><div className="right-menu language"  onClick={this.changeLocale}>{lang==='en-US'?'中文':'English'}</div> </Menu.Item>
+        <Menu.Item key="5"><div className="right-menu"> <Dropdown overlay={personMenu} trigger={['click']}><Avatar style={{ color: '#f56a00', backgroundColor: '#fde3cf'}}>A</Avatar></Dropdown></div></Menu.Item>
       </Menu>
     </Header>
     <Layout>
@@ -194,6 +243,7 @@ class Home extends React.Component<HomeProps,HomeState> {
             <Redirect exact path={`${process.env.PUBLIC_URL}/`} to={`${process.env.PUBLIC_URL}/presentation`} />
             <Redirect from='*' to='/404' />
           </RouteSwitch>
+          <AllSetting onCloseClick={this.onClose} drawerVisible={drawerVisible}></AllSetting>
          </div>
         <Footer style={{ textAlign: 'center' }}>Practice ©2019 Created by Amber</Footer>
       </Layout>
@@ -213,8 +263,9 @@ const mapStateToProps =(state: { common:CommonReducer })=>{
 const mapDispatchToProps = {
  
   handleClick: getNews,
-  setLastOpenKey:(openKeys:string[])=>setLastOpenKeyA(openKeys),
-  setSelectKey:(selectKey:string)=>setSelectKeyA(selectKey)
+  setLastOpenKey:(openKeys:string[])=>setLastOpenKeyAn(openKeys),
+  setSelectKey:(selectKey:string)=>setSelectKeyAn(selectKey),
+  logoutClick:logoutClickAn
 
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Home)

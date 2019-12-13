@@ -5,7 +5,9 @@ const sagaTestReducer = (state = {num:0}, action: any) => {
       case Constants.INCREMENT:
          return { ...state, num:state.num+action.account};
       case Constants.DECREMENT:
-         return { ...state, num:state.num-1 }
+         return { ...state, num:state.num-1 };
+      case Constants.CLEAR_ALL:
+            return { num:0};
       default:
          return state;
    }

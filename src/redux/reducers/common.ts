@@ -6,12 +6,14 @@ let defaultState: CommonReducer = {
   selectKey:'dashboard'
 }
 const commonReducer = (state=defaultState, action: any):CommonReducer =>{
-  console.log(action)
    switch (action.type) {
       case Constants.SET_LAST_OPEN_KEY:
          return { ...state, openKeys:action.openKey};
       case Constants.SET_SELECT_KEY:
-         return { ...state,selectKey:action.selectKey }
+         return { ...state,selectKey:action.selectKey };
+      case Constants.CLEAR_ALL:
+         return {  openKeys:['presentation'],
+         selectKey:'dashboard' };
       default:
          return state;
    }
