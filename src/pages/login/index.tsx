@@ -3,24 +3,22 @@ import React, { useEffect } from 'react';
 import { Form, Icon, Input, Button, Checkbox, message } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 // import { setSessionStorage } from '../../utils/storage';
-import {HistoryBase} from '../../utils/common';
+// import {HistoryBase} from '../../utils/common';
 import { FormComponentProps } from 'antd/es/form';
 import Constants from '../../redux/constants';
 import {loginClickAn} from '../../redux/actions';
-
+import { RouteComponentProps } from 'react-router-dom';
 import {UserBase} from '../../utils/common'
 /**************** 此处为 antd 的From 类型定义 *******************/ 
 
 export interface FormProps extends FormComponentProps,UserBase {
   
 }
-
-export interface LoginProps extends FormProps {
-  history:HistoryBase,
+// RouteComponentProps<any>  中就包含history 相关类型定义
+export interface LoginProps extends FormProps,RouteComponentProps<any>  {
+  // history:HistoryBase,
 }
  
-
-
 
 const Login: React.SFC<LoginProps> = ({ history, form }) => {
   /** ***********redux**************** */
@@ -40,12 +38,11 @@ const Login: React.SFC<LoginProps> = ({ history, form }) => {
    
   useEffect(() => {
     dispatch({type:Constants.CLEAR_ALL})
-    console.log('clear')
   },[])
   const handleSubmit = (e: { preventDefault: () => void; }) => {
     console.log(num);
     e.preventDefault();
-    form.validateFields((err: any, values: { username: any; password: any; }) => {
+    form.validateFields((err: any, values: UserBase) => {
       // 去掉用户输入帐号密码时输入的空格
       // const username = values.username.replace(/\s+/g, '');
       // const password = values.password.replace(/\s+/g, '');
@@ -54,24 +51,6 @@ const Login: React.SFC<LoginProps> = ({ history, form }) => {
       if (!err) {
         console.log(values)
         dispatch(loginClickAn(values))
-        // dispatch(
-        //   actions.user.handleLogin({
-        //     username,
-        //     password
-        //   })
-        // )
-        //   .then(response => {
-        //     // console.log(response);
-        //     if (response.data.state === 20101 && response.data.token) {
-        //       setSessionStorage('auth_user', response.data.token);
-        //       history.push(`${process.env.PUBLIC_URL}/`);
-        //     } else {
-        //       message.error('Sorry, the account with this keycode was not found');
-        //     }
-        //   })
-        //   .catch(error => {
-        //     console.log(error);
-        //   });
       }
     });
   };

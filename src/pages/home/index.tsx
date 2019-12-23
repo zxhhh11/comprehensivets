@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux'
 import { Layout, Menu, Icon,Breadcrumb,DatePicker,Popover,Tabs,Button ,Badge,Avatar,Dropdown} from 'antd';
-import { getNews,setLastOpenKeyAn, setSelectKeyAn,logoutClickAn} from '../../redux/actions/index';
+import { getLists,setLastOpenKeyAn, setSelectKeyAn,logoutClickAn} from '../../redux/actions/index';
 import {logoutApi} from '../../redux/api/user';
 import { Route, Switch as RouteSwitch, Redirect, Link } from 'react-router-dom';
 import Presentation from './presentation/index'
@@ -13,7 +13,7 @@ import routers from '../../utils/routers';
 import {emit} from '../../utils/emit'
 // import intl from 'react-intl-universal';
 import AllSetting from '../../components/allSetting';
-
+import Account from './account/index'
 
 const { TabPane } = Tabs;
 const { SubMenu } = Menu;
@@ -30,7 +30,10 @@ const breadcrumbNameMap:any = {
   '/tableList/headerGroup': 'HeaderGroup',
   '/tableList/editable': 'Editable',
   '/files': 'Files',
-  '/charts': 'Charts'
+  '/charts': 'Charts',
+  '/account': 'Account',
+  '/account/center': 'Center',
+  '/account/setting': 'Setting'
 };
 
 export interface HomeProps extends RouterProps {
@@ -158,13 +161,13 @@ class Home extends React.Component<HomeProps,HomeState> {
   const personMenu = (
     <Menu>
       <Menu.Item key="0">
-        <a href="http://www.alipay.com/"> <Icon type="user"></Icon> &nbsp;Person one</a>
+      <Link to={`${process.env.PUBLIC_URL}/account/accountCenter`}><Icon type="user"></Icon>&nbsp;&nbsp;Account Center</Link>
       </Menu.Item>
       <Menu.Item key="1">
-     <a href="http://www.taobao.com/"> <Icon type="user"></Icon>&nbsp;Person two</a>
+      <Link to={`${process.env.PUBLIC_URL}/account/accountSetting`}><Icon type="setting"></Icon>&nbsp;&nbsp;Account Setting</Link>
       </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="3" onClick={logoutClick}><Icon type="logout"></Icon>&nbsp;&nbsp;Log out</Menu.Item>
+      {/* <Menu.Divider /> */}
+      <Menu.Item key="2" onClick={logoutClick}><Icon type="logout"></Icon>&nbsp;&nbsp;Log out</Menu.Item>
     </Menu>
   );
   
@@ -197,7 +200,7 @@ class Home extends React.Component<HomeProps,HomeState> {
     return (
      
   <Layout id="layout-h">
-    <Header className="header" >
+    <Header className="header"  >
       <Icon
           className="trigger"
           type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
@@ -234,12 +237,12 @@ class Home extends React.Component<HomeProps,HomeState> {
       <Layout style={{ padding: '0 24px' }}>
         <Breadcrumb style={{ margin: '16px 0' }}>{breadcrumbItems}</Breadcrumb>
         <div className="ant-layout-content">
-        <DatePicker />
           <RouteSwitch>
             <Route component={Presentation} path={`${process.env.PUBLIC_URL}/presentation`} />
             <Route component={TableList} path={`${process.env.PUBLIC_URL}/tableList`} />
             <Route component={Files} path={`${process.env.PUBLIC_URL}/files`} />
             <Route component={Charts} path={`${process.env.PUBLIC_URL}/charts`} />
+            <Route component={Account} path={`${process.env.PUBLIC_URL}/account`} />
             <Redirect exact path={`${process.env.PUBLIC_URL}/`} to={`${process.env.PUBLIC_URL}/presentation`} />
             <Redirect from='*' to='/404' />
           </RouteSwitch>
@@ -262,7 +265,7 @@ const mapStateToProps =(state: { common:CommonReducer })=>{
 }
 const mapDispatchToProps = {
  
-  handleClick: getNews,
+  handleClick: getLists,
   setLastOpenKey:(openKeys:string[])=>setLastOpenKeyAn(openKeys),
   setSelectKey:(selectKey:string)=>setSelectKeyAn(selectKey),
   logoutClick:logoutClickAn

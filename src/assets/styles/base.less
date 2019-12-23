@@ -20,8 +20,20 @@ img {
     background: rgb(255, 255, 255);
      padding: 24px;
      margin: 0px;
-     min-height: 280px;
+    //  min-height: 280px;
      flex: auto;
+     .h-actions{
+      float:right;
+      button{
+        margin-left:20px
+      }
+    }
+    .clear{
+      clear: both;
+    }
+    .ant-form{
+      margin: 10px 0 0;
+    }
   }
   .ant-menu.ant-menu-dark {
     .ant-menu-item-selected.ant-menu-item-active,.ant-menu-item:hover{
@@ -32,16 +44,27 @@ img {
     }
     .ant-menu-item {
       padding: 0;
-      .right-menu{
-        padding: 0 14px;
-      }
       .anticon{
         margin-right: 0
       }
-      .ant-badge-count{
-        height: 16px;
-        min-width: 16px;
-        line-height: 16px;
+      .right-menu{
+        padding: 0 14px;
+        .ant-badge{
+          color: rgba(255, 255, 255, 0.65);
+         
+          .ant-badge-count{
+            height: 16px;
+            min-width: 16px;
+            line-height: 16px;
+          }
+        }
+      }
+    }
+    .ant-menu-item.ant-menu-item-active{
+      .right-menu{
+        .ant-badge{
+          color: #fff;
+        }
       }
     }
    
@@ -107,4 +130,22 @@ img {
       }
     }
   }
+}
+
+//  ConfigProvider antd 国际化部分
+.locale-components {
+  border-top: 1px solid #d9d9d9;
+  padding-top: 16px;
+}
+
+.example {
+  margin: 16px 0;
+}
+
+.example > * {
+  margin-right: 8px;
+}
+
+.change-locale {
+  margin-bottom: 16px;
 }

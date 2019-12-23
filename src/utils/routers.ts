@@ -73,7 +73,29 @@ const routers:RoutersBase[] = [
     title: 'Charts',
     url: '/charts',
     children: null
-  }
+  },
+  {
+    key: 'account',
+    icon: 'user',
+    title: 'Account',
+    url: '',
+    children: [
+      {
+        key: 'accountCenter',
+        url: '/account/center',
+        title: 'Account Center',
+        icon: null,
+        children: null
+      },
+      {
+        key: 'accountSetting',
+        url: '/account/setting',
+        title: 'Account Setting',
+        icon: null,
+        children: null
+      }
+    ]
+  },
  
   
 ];

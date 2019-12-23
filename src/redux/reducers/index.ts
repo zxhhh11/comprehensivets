@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import articleReducer from './article';
+import listReducer from './list';
 import sagaTestReducer from './sagatest';
 import {persistReducer} from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
@@ -15,7 +15,7 @@ const rootReducer = combineReducers({
   // article: articleReducer,
   // sagaTest:sagaTestReducer
   common:persistReducer(persistConfig,commonReducer),
-  article:persistReducer(persistConfig, articleReducer),
+  list:persistReducer(persistConfig, listReducer),
   sagaTest:persistReducer(persistConfig, sagaTestReducer),
   user:persistReducer(persistConfig,userReducer)
 });

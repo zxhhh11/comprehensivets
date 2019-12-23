@@ -1,3 +1,5 @@
 {
-  "test":"测试"
+  "getData":"获取数据",
+  "increment":"加 3",
+  "decrement":"减 1"
 }

@@ -19,3 +19,4 @@ export function getProjectListApi(data:any):any {
 export function updateProjectApi(data:any):any {
   return axios.post(serverUrl(`${serverName}project/update`), data);
 }
+

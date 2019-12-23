@@ -1,4 +1,5 @@
 import { update } from './util';
+// import { array } from 'prop-types';
 
 const Mock = require('mockjs');
 // const data = [];
@@ -29,8 +30,8 @@ const data = Mock.mock({
       'colors|0-5': 0,
       'number|1-16': 1,
       'support|1-2': true,
-      'mode|+1': ['a', 'b', 'c'],
-      'priorities|+1': ['d', 'e', 'f', 'g']
+      'mode|1':[0,1,2],
+      'priorities|1':[0,1,2,3]
     }
   ]
 });

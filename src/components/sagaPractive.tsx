@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Button} from 'antd';
 import {connect} from 'react-redux';
-
+import intl from 'react-intl-universal';
 import {incrementAction,decrementAction} from '../redux/actions/index';
 
 
@@ -23,10 +23,10 @@ class Counter extends React.Component<CounterProps,CounterState> {
   render() { 
   let {incrementClick,num,decrementClick} = this.props;
   return ( 
-  <div>
+  <div style={{marginBottom:"20px"}}>
     <h2>{num}</h2>
-    <Button type="primary" onClick={incrementClick.bind(this,3)}>Increment</Button>
-    <Button type="danger"  onClick={decrementClick}>Decrement</Button>
+    <Button type="primary" style={{marginRight:"20px"}} onClick={incrementClick.bind(this,3)}>{intl.get('increment')}</Button>
+    <Button type="danger"  onClick={decrementClick}>{intl.get('decrement')}</Button>
   </div> );
   }
 }

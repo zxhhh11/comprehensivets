@@ -16,6 +16,7 @@ export interface RouterProps extends RouteComponentProps  {
   routes?: PlainRoute[];
 }
 
+
 /****************history 参数类型定义********************/  
 export interface HistoryBase {
   history?:H.History
@@ -37,4 +38,27 @@ export interface CommonReducer{
 export interface UserBase{
   username:string,
   password:string
+}
+
+
+/********************** reducer *******************/ 
+export interface ListBase{
+  key:number,
+  name:string,
+  country:number,
+  effectiveDate:string,
+  address:string,
+  email:string,
+  natural:number,
+  colors:number,
+  number:number,
+  support:boolean,
+  mode:string,
+  priorities:string
+}
+export interface ListReducer {
+  lists:ListBase[],
+  loading?:boolean,
+  news?:any,
+  row?:any
 }

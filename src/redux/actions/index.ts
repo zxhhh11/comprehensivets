@@ -1,9 +1,9 @@
 import * as ActionTypes from './actionTypes'
 import Constants from '../constants'
 import {UserBase} from '../../utils/common'
-export const getNews = ()=>(
+export const getLists = ()=>(
      {
-    type: ActionTypes.GET_NEWS
+    type: ActionTypes.GET_LISTS
   }
 )
 
@@ -31,4 +31,12 @@ export const logoutClickAn=()=>({
 
 export const loginClickAn=(user:UserBase)=>({
   type:Constants.LOGIN_ACTION,user
+})
+
+
+
+/********************table & form************************/ 
+
+export const sentRowListAn=(row:any)=>({
+  type:Constants.SENT_ROW_LIST,row
 })
